@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.prod
+    ports:
+      - "80:80"
+    environment:
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      - RUST_ENV=production
+      - RUST_LOG=info
+    depends_on:
+      - postgres
+    networks:
+      - app-network
