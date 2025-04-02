@@ -8,7 +8,11 @@
     let data = $state("Loading...")
 
     onMount(() => {
-        fetch(URL)
+        fetch(URL, {
+            headers: {
+                "Authorization": "Bearer " + "jdhzif",
+            },
+        })
             .then(t => t.text())
             .then(t => {
                 data = t;
