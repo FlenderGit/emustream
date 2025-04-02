@@ -1,4 +1,4 @@
-const SIZES = {
+export const SIZES = {
     xs: .6,
     sm: .8,
     md: 1,

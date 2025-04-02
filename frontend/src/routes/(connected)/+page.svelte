@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import RowPlayed from "$lib/components/containers/rows/RowPlayed.svelte";
+	import SelectableArea from "$lib/components/containers/SelectableArea.svelte";
+import { onMount } from "svelte";
 
 
     // const URL = import.meta.env.VITE_API_URL;
@@ -28,4 +30,9 @@
 
 <p>Jean bref...</p>
 
-<p>{ data }</p>
+<p>Recu: { data }</p>
+
+<SelectableArea>
+    <RowPlayed/>
+</SelectableArea>
+
