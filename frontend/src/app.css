@@ -21,7 +21,7 @@
 		@apply grid min-h-screen;
 	}
 
-    @keyframes slide-from-bottom {
+	@keyframes slide-from-bottom {
 		from {
 			transform: translateY(100%);
 		}
@@ -33,12 +33,38 @@
 		}
 	}
 
-    .view-transition-scroll-down {
+	.view-transition-scroll-down {
 		view-transition-name: scroll-down;
 	}
 
 	.view-transition-scroll-up {
 		view-transition-name: scroll-up;
+	}
+
+	.view-transition-scroll-left {
+		view-transition-name: scroll-left;
+	}
+
+	.view-transition-scroll-right {
+		view-transition-name: scroll-right;
+	}
+
+	:root::view-transition-old(scroll-right) {
+		animation:
+			1400ms slide-to-left,
+			900ms fade-out;
+	}
+
+	:root::view-transition-new(scroll-right) {
+		animation: 1400ms slide-from-right;
+	}
+
+	:root::view-transition-old(scroll-left) {
+		animation: 800ms reverse slide-from-right;
+	}
+
+	:root::view-transition-new(scroll-left) {
+		animation: 800ms reverse slide-to-left;
 	}
 
 	:root::view-transition-old(scroll-down) {
@@ -59,10 +85,7 @@
 }
 
 @layer components {
-
-    .flex-center {
-        @apply flex items-center justify-center;
-    }
-
-
+	.flex-center {
+		@apply flex items-center justify-center;
+	}
 }

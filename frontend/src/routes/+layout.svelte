@@ -6,23 +6,34 @@
 
 	let div_ref: HTMLDivElement;
 
-
-
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
 
 		const { from, to } = navigation;
-		const url = from?.url.pathname;
-		const from_home = url === '/' || url === '/logout';
+		const from_url = from?.url.pathname;
+		const to_url = to?.url.pathname; 
 
-		console.log('from', from, 'to', to, 'url', url, 'from_home', from_home);
+		let animation = 'scroll-left';
 
-		const dir = from_home ? 'down' : 'up';
-		const dir_inverse = from_home ? 'up' : 'down';
+		if (to_url === '/login') {
+			animation = 'scroll-up';
+		} else if (from_url === '/login') {
+			animation = 'scroll-down';
+		} else if (from_url?.length > to_url?.length) {
+			animation = 'scroll-right';
+		} else {
+			animation = 'scroll-left';
+		}
 
-		div_ref.classList.add('view-transition-scroll-' + dir_inverse);
-		div_ref.classList.remove('view-transition-scroll-' + dir);
 
+		// Revode all class that start with view-transition-
+		div_ref.classList.forEach((className) => {
+			if (className.startsWith('view-transition-')) {
+				div_ref.classList.remove(className);
+			}
+		});
+
+		div_ref.classList.add('view-transition-' + animation);
 
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {

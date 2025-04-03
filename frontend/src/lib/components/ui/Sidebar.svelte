@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { convert_size_to_fontsize } from '$lib/ts/convert';
 	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
 
 	type SidebarLink = {
 		name: string;
@@ -39,24 +40,29 @@
 
 <div class="w-16"></div>
 
-<div class="absolute inset-0">
-	<div
-		class="bg-secondary z-10 absolute inset-0 flex w-16 flex-col gap-2 p-2 transition-all duration-500 hover:w-64"
-		class:-translate-x-full={!is_active}
-		class:opacity-0={!is_active}
-		onmouseover={() => (is_hovered = true)}
-		onmouseleave={() => (is_hovered = false)}
-	>
-		{#each links as { name, icon, href, onclick }}
-			<a
-				{href}
-				class="hover:bg-primary flex items-center gap-2 overflow-hidden rounded-xl p-1 transition-colors"
-				{onclick}
-			>
-				<Icon {icon} class="shrink-0" font-size={convert_size_to_fontsize(ICONS_SIZE)} />
-				<p>{name}</p>
-			</a>
-		{/each}
-	</div>
-	<div class="absolute inset-0 bg-neutral-900/50 backdrop-blur-xs transition-all duration-500" class:opacity-0={!is_hovered} />
+<div
+	style="view-transition-name: sidebar"
+	class="bg-secondary absolute inset-0 z-10 flex w-16 flex-col gap-2 p-2 transition-all duration-500 hover:w-64"
+	class:-translate-x-full={!is_active}
+	class:opacity-0={!is_active}
+	onmouseover={() => (is_hovered = true)}
+	onmouseleave={() => (is_hovered = false)}
+>
+	{#each links as { name, icon, href, onclick }}
+		<a
+			{href}
+			class="hover:bg-primary flex items-center gap-2 overflow-hidden rounded-xl p-1 transition-colors"
+			{onclick}
+		>
+			<Icon {icon} class="shrink-0" font-size={convert_size_to_fontsize(ICONS_SIZE)} />
+			<p>{name}</p>
+		</a>
+	{/each}
 </div>
+
+{#if is_hovered}
+	<div
+		transition:fade
+		class="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm transition-all duration-500"
+	></div>
+{/if}

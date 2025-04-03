@@ -1,28 +1,22 @@
 <script lang="ts">
-	import RowPlayed from "$lib/components/containers/rows/RowPlayed.svelte";
-	import SelectableArea from "$lib/components/containers/SelectableArea.svelte";
-import { onMount } from "svelte";
+	import { onMount } from 'svelte';
 
+	// const URL = import.meta.env.VITE_API_URL;
+	const URL = '/api/hello';
 
-    // const URL = import.meta.env.VITE_API_URL;
-    const URL = "/api/hello";
+	let data = $state('Loading...');
 
-    let data = $state("Loading...")
-
-    onMount(() => {
-        fetch(URL, {
-            headers: {
-                "Authorization": "Bearer " + "jdhzif",
-            },
-        })
-            .then(t => t.text())
-            .then(t => {
-                data = t;
-            })
-    })
-
-
-
+	onMount(() => {
+		fetch(URL, {
+			headers: {
+				Authorization: 'Bearer ' + 'jdhzif'
+			}
+		})
+			.then((t) => t.text())
+			.then((t) => {
+				data = t;
+			});
+	});
 </script>
 
 <h1>Welcome to SvelteKit</h1>
@@ -30,6 +24,6 @@ import { onMount } from "svelte";
 
 <p>Jean bref...</p>
 
-<p>Recu: { data }</p>
+<p>Recu: {data}</p>
 
-
+<a href="/gameboy">To gameboy</a>
