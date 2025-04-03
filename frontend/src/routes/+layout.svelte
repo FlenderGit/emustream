@@ -13,7 +13,9 @@
 
 		const { from, to } = navigation;
 		const url = from?.url.pathname;
-		const from_home = url === '/';
+		const from_home = url === '/' || url === '/logout';
+
+		console.log('from', from, 'to', to, 'url', url, 'from_home', from_home);
 
 		const dir = from_home ? 'down' : 'up';
 		const dir_inverse = from_home ? 'up' : 'down';

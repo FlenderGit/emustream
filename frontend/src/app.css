@@ -12,7 +12,7 @@
 
 @layer base {
 	html {
-		font-family: 'Quicksand', sans-serif;
+		font-family: 'Raleway', sans-serif;
 		background-color: var(--color-background);
 		color: var(--color-whiter);
 	}
@@ -56,4 +56,13 @@
 	:root::view-transition-new(scroll-up) {
 		animation: 800ms reverse slide-to-top;
 	}
+}
+
+@layer components {
+
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+
 }

@@ -32,7 +32,4 @@ import { onMount } from "svelte";
 
 <p>Recu: { data }</p>
 
-<SelectableArea>
-    <RowPlayed/>
-</SelectableArea>
 
