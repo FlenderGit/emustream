@@ -76,6 +76,7 @@ async fn main() -> Result<(), std::io::Error> {
     // Insert the game into the collection
     let insert_result = collection.insert_one(game).await.unwrap();
     println!("Inserted document with id: {}", insert_result.inserted_id);
+    */
 
     // Find the game by title
     let filter = doc! { "title": "CLANNAD" };
@@ -86,7 +87,7 @@ async fn main() -> Result<(), std::io::Error> {
             println!("Found game: {}", json);
         }
         None => println!("Game not found"),
-    }*/
+    }
 
     /* let games = collection.find(None).await.unwrap();
     while let Some(game) = games.next().await {

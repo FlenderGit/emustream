@@ -1,7 +1,32 @@
 use axum::{Json, http::StatusCode, response::IntoResponse};
+use serde::Serialize;
+use std::fmt;
 use thiserror::Error;
 
 const INTERNAL: &str = "Internal error";
+
+#[derive(Serialize, Debug, PartialEq, Eq)]
+pub struct ErrorJson {
+    key: String,
+    errors: Vec<String>,
+}
+
+#[derive(Serialize, Debug, PartialEq, Eq)]
+pub struct ErrorsJson(pub Vec<ErrorJson>);
+impl std::error::Error for ErrorsJson {}
+
+impl fmt::Display for ErrorsJson {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let json = serde_json::to_string(&self.0).unwrap_or_else(|_| "[]".to_string());
+        write!(f, "{}", json)
+    }
+}
+
+impl ErrorJson {
+    pub fn new(key: String, errors: Vec<String>) -> Self {
+        Self { key, errors }
+    }
+}
 
 #[derive(Debug, PartialEq, Eq, Error)]
 pub enum ApiError {
@@ -13,8 +38,19 @@ pub enum ApiError {
 
     #[error("{0}")]
     NotFound(&'static str),
-    // Serde
 
+    #[error("{0}")]
+    BadRequest(String),
+
+    // Json
+    #[error("Json error: {0}")]
+    JsonNotOk(String),
+
+    // Display as a JSON object
+    #[error(transparent)]
+    JsonNotValid(#[from] ErrorsJson),
+
+    // Serde
     #[error(transparent)]
     AuthError(#[from] AuthError),
 }
@@ -48,8 +84,16 @@ pub(crate) struct ErrorResponse {
     }
 } */
 
-pub type ApiResult<T> = Result<Json<T>, ApiError>;
+impl From<mongodb::error::Error> for ApiError {
+    fn from(err: mongodb::error::Error) -> Self {
+        match *err.kind {
+            mongodb::error::ErrorKind::InvalidArgument { message, .. } => ApiError::BadRequest(message),
+            _ => ApiError::Internal,
+        }
+    }
+}
 
+pub type ApiResult<T> = Result<Json<T>, ApiError>;
 
 /* impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -84,8 +128,8 @@ impl IntoResponse for ApiError {
         let status = self.status().clone();
 
         /* let trace_id = middleware::TRACE_ID
-            .try_with(|trace_id| trace_id.clone().to_string())
-            .unwrap_or_else(|_| "unknown".to_string()); */
+        .try_with(|trace_id| trace_id.clone().to_string())
+        .unwrap_or_else(|_| "unknown".to_string()); */
 
         let trace_id = "not-implemented".to_string(); // TODO: Implement trace_id
 

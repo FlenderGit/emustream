@@ -11,6 +11,7 @@ use axum::{
     routing::get,
 };
 
+use chrono::format;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -18,6 +19,8 @@ use validator::Validate;
 
 use mongodb::bson::serde_helpers::serialize_object_id_as_hex_string;
 use mongodb::bson::{doc, oid::ObjectId};
+
+use crate::error::{ApiError, ErrorJson, ErrorsJson};
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct Game {
@@ -73,13 +76,29 @@ where
     S: Send + Sync,
     Json<T>: FromRequest<S, Rejection = JsonRejection>,
 {
-    type Rejection = ServerError;
+    type Rejection = ApiError;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         let Json(value) = Json::<T>::from_request(req, state)
             .await
-            .map_err(|err| ServerError::AxumJsonRejection(err))?;
-        value.validate().map_err(|err| ServerError::ValidationError(err))?;
+            .map_err(|err| ApiError::JsonNotOk(format!("Json error: {}", err.body_text())))?;
+        value.validate().map_err(|err| {
+            let errors = err
+                .field_errors()
+                .iter()
+                .map(|(key, errors)| {
+                    ErrorJson::new(
+                        key.to_string(),
+                        errors
+                            .iter()
+                            .map(|e| e.message.as_ref().map(|s| s.to_string()).unwrap_or_else(|| "Unknown error".to_string()))
+                            .collect(),
+                    )
+                })
+                .collect();
+            let errors = ErrorsJson(errors);
+            ApiError::JsonNotValid(errors)
+        })?;
         Ok(ValidatedJson(value))
     }
 }

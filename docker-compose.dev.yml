@@ -1,5 +1,23 @@
-version: '3.8'
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - cargo-registry:/usr/local/cargo/registry
+    environment:
+      - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@mongo:27017/${DB_NAME}?authSource=admin&directConnection=true
+      - RUST_LOG=debug
+      - CARGO_WATCH_POLL=true
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - app-network
   frontend:
     build:
       context: ./frontend
@@ -13,25 +31,6 @@ services:
       - VITE_API_URL=http://backend:3000/
     depends_on:
       - backend
-    networks:
-      - app-network
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app
-      - cargo-registry:/usr/local/cargo/registry
-    environment:
-      - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@mongo:27017/emustream?authSource=admin
-      - RUST_LOG=debug
-      - CARGO_WATCH_POLL=true
-      - JWT_SECRET=${JWT_SECRET}
-    depends_on:
-      - mongo
     networks:
       - app-network
 
