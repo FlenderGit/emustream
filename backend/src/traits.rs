@@ -1,10 +1,10 @@
 use axum::http::StatusCode;
 use futures::TryStreamExt;
-use mongodb::{bson::{oid::ObjectId, Document}, Cursor};
+use mongodb::{action::Find, bson::{oid::ObjectId, Document}, Cursor};
 
 use std::io::Error;
 
-use crate::error::ApiError;
+use crate::{api::Pagination, error::ApiError};
 
 
 
@@ -12,6 +12,12 @@ pub trait CursorExt {
     /// Convertit le curseur en un Vec<ObjectId>.
     async fn to_object_ids(self) -> Result<Vec<ObjectId>, ApiError>;
 }
+
+pub trait Paginate {
+    /// Paginer les résultats d'une requête MongoDB.
+    fn paginate(self, paginate: Pagination) -> Self;
+}
+
 
 
 /// Implémentation de CursorExt pour un curseur sur Document.

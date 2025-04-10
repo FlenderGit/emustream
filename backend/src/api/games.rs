@@ -1,8 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use axum::{
-    Router,
-    extract::{Path, State},
+    extract::{Multipart, Path, Query, State}, http::HeaderMap, routing::post, Router
 };
 use futures::{TryStreamExt, io::Cursor};
 use mongodb::{
@@ -11,27 +10,69 @@ use mongodb::{
 };
 
 use crate::{
-    AppContext,
-    error::{ApiError, ApiResult},
-    models::{Game, User},
-    traits::CursorExt,
+    api::SortDirection, error::{ApiError, ApiResult}, models::{Game, User}, traits::CursorExt, AppContext
 };
 
-use super::auth::Claims;
+use super::{auth::Claims, Pagination};
 
 pub fn get_games_router(app_state: Arc<AppContext>) -> Router<Arc<AppContext>> {
     Router::new()
         .route("/", axum::routing::get(get_all_games))
         .route("/homepage", axum::routing::get(get_data_homepage))
+        //.route("/upload-new-game", post(handler_upload_new_game))
+        //.route("/upload-new-release", post(handler_upload_new_release))
         .route("/{id}", axum::routing::get(get_game_by_id))
         .with_state(app_state)
 }
 
-async fn get_all_games(State(app_state): State<Arc<AppContext>>) -> ApiResult<Vec<Game>> {
+/* async fn handler_upload_new_game(
+    State(app_state): State<Arc<AppContext>>,
+    headers: HeaderMap,
+    mut multipart: Multipart,
+) -> ApiResult<Game> { */
+
+// Game: Name, tags, developers, release_date
+// Release: title, platforms, languages, region, release_date, (path)
+
+// Form
+// Toggle: Is game already exists ?
+//  yes: only add release form
+//  no: add game form + release form
+
+/* let game_name = headers
+.get("X-Game-name"); */
+
+/*     Ok(axum::Json(game))
+} */
+
+
+async fn get_all_games(paginate: Query<Pagination>, State(app_state): State<Arc<AppContext>>) -> ApiResult<Vec<Game>> {
+    
+    let sort = match &paginate.sort_dir {
+        Some(sort) => {
+            let dir = if *sort == SortDirection::Desc { -1 } else { 1 };
+            doc! { "title": dir }
+        },
+        None => doc! {}
+    };
+
+    let options = FindOptions::builder()
+        .limit(paginate.limit)
+        .skip(paginate.page)
+         .sort(sort)
+        .build();
+
+
+    let filter_doc = match &paginate.query {
+        Some(query) => doc! { "title": { "$regex": query, "$options": "i" } },
+        None => doc! {},
+    };
+
     let cursor = app_state
         .db
         .collection::<Game>("game")
-        .find(doc! {})
+        .find(filter_doc)
+        .with_options(options)
         .await?;
     let games = cursor.try_collect().await?;
     Ok(axum::Json(games))
@@ -62,7 +103,11 @@ async fn get_user_recent_games(
         doc! { "$limit": 10 },
         doc! { "$group": { "_id": "$saves.game_id" } },
     ];
-    collection_user.aggregate(pipeline).await?.to_object_ids().await
+    collection_user
+        .aggregate(pipeline)
+        .await?
+        .to_object_ids()
+        .await
 }
 
 async fn get_data_homepage(
@@ -93,7 +138,7 @@ async fn get_data_homepage(
 
     let mut recent_added_ids = collection_games.find(filter).with_options(options).await?;
 
-    let mut v_recent_added_ids =Vec::new();
+    let mut v_recent_added_ids = Vec::new();
     while let Some(doc) = recent_added_ids.try_next().await? {
         let game: Game = doc;
         println!("Game vvv: {:?}", game);
@@ -121,7 +166,8 @@ async fn get_data_homepage(
         data.insert(game_id, game);
     }
 
-    let recent_games_ids: Vec<String> = user_recent_games_ids.iter().map(|id| id.to_hex()).collect();
+    let recent_games_ids: Vec<String> =
+        user_recent_games_ids.iter().map(|id| id.to_hex()).collect();
 
     let recent_added_ids: Vec<String> = v_recent_added_ids.iter().map(|id| id.to_hex()).collect();
 
