@@ -26,9 +26,9 @@ pub fn create_router(app_state: Arc<AppContext>) -> Router {
     let router_api = Router::new().nest("/games", get_games_router(app_state.clone()));
 
     Router::new()
-        .route("/login", post(handler_login))
         .route("/healthcheck", get(health_check_handler))
         .route("/me", get(handler_me_claims))
+        .route("/login", post(handler_login))
         .nest("/api", router_api)
         .layer(middleware::from_fn(middleware_request_time))
         .with_state(app_state)

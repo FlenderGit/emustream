@@ -1,5 +1,7 @@
+use std::str::FromStr;
 use std::sync::{LazyLock, OnceLock};
 
+use axum::extract::Path;
 use axum::RequestPartsExt;
 use axum::{
     Extension, Json,
@@ -14,6 +16,7 @@ use axum_extra::{
 };
 use chrono::Utc;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -59,7 +62,7 @@ pub struct AuthBody {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     aud: String,
-    pub sub: usize, // Subject (id)
+    pub sub: String, // Subject (id)
     exp: usize,
     iat: usize,
     iss: String,
@@ -112,16 +115,20 @@ pub async fn handler_me_claims(claims: Claims) -> ApiResult<Claims> {
     Ok(Json(claims))
 }
 
-pub async fn handler_login(ValidatedJson(payload): ValidatedJson<AuthPayload>) -> ApiResult<AuthBody> {
+pub async fn handler_login(
+    ValidatedJson(payload): ValidatedJson<AuthPayload>,
+) -> ApiResult<AuthBody> {
     /* ensure!(!payload.username.is_empty(), Error::AuthMissingCredentials);
     ensure!(!payload.password.is_empty(), Error::AuthMissingCredentials); */
 
     let iat = Utc::now().timestamp() as usize;
-    let exp = iat + 3600;
+    let exp = iat + 7200;
 
     let claims = Claims {
         aud: "emustream_app".to_string(),
-        sub: 1,
+        sub: ObjectId::from_str("67f7c9ae2bf3047e6b740fd3")
+            .map_err(|_| ApiError::BadRequest("Invalid user ID".to_string()))?
+            .to_hex(),
         iat,
         iss: "emustream_api".to_string(),
         name: payload.username.clone(),
@@ -133,5 +140,6 @@ pub async fn handler_login(ValidatedJson(payload): ValidatedJson<AuthPayload>) -
         &claims,
         &EncodingKey::from_secret(get_secret().as_ref()),
     )?;
+
     Ok(Json(AuthBody { token }))
 }

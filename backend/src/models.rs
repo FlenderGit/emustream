@@ -1,4 +1,4 @@
-use std::ptr;
+use std::{path::Path, ptr};
 
 use axum::{
     Json, Router,
@@ -38,6 +38,7 @@ pub struct Game {
     pub tags: Vec<String>,
     pub developers: Vec<String>,
     pub release_date: chrono::DateTime<chrono::Utc>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub releases: Vec<Release>,
     pub metadata: Option<bool>,
 }
@@ -51,7 +52,35 @@ pub struct Release {
     pub languages: Vec<String>,
     pub region: Option<String>,
     pub release_date: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub path: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct User {
+    #[serde(
+        rename(serialize = "id", deserialize = "_id"),
+        skip_serializing_if = "Option::is_none",
+        serialize_with = "serialize_option_object_id_as_hex_string"
+    )]
+    pub id: Option<ObjectId>,
+    pub username: String,
+    pub password: String,
+    pub email: String,
+    pub saves: Vec<GameSave>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct GameSave {
+    pub id: ObjectId,
+    pub game_id: ObjectId,
+    pub release_id: ObjectId,
+    pub save_data: String,
+    pub time_spent: i64,
+    pub save_name: String,
+    pub timestamp: i64,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
 // Nouvelle fonction helper pour gérer Option<ObjectId>

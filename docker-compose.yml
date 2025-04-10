@@ -9,7 +9,7 @@ services:
       - app-network
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017 --quiet
-      interval: 60s
+      interval: 5s
       retries: 5
     
 

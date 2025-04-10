@@ -3,6 +3,7 @@ use serde::Serialize;
 use std::fmt;
 use thiserror::Error;
 
+
 const INTERNAL: &str = "Internal error";
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
@@ -83,6 +84,8 @@ pub(crate) struct ErrorResponse {
         Error::Generic(value, StatusCode::INTERNAL_SERVER_ERROR)
     }
 } */
+
+
 
 impl From<mongodb::error::Error> for ApiError {
     fn from(err: mongodb::error::Error) -> Self {
