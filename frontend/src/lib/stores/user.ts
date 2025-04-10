@@ -14,4 +14,3 @@ function create_user_store() {
 }
 
 export const user_store = create_user_store();
-

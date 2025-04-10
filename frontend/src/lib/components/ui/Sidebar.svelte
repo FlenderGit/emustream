@@ -3,7 +3,7 @@
 
 	import Icon from '@iconify/svelte';
 	import { onMount } from 'svelte';
-	import { convert_size_to_fontsize } from '$lib/ts/convert';
+	import { convert_size_to_fontsize } from '$lib/functions/convert';
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
 

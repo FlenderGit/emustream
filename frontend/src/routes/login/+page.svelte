@@ -1,5 +1,5 @@
 <script>
-	import { convert_size_to_fontsize } from "$lib/ts/convert";
+	import { convert_size_to_fontsize } from "$lib/functions/convert";
 
 
 	import Icon from "@iconify/svelte";
