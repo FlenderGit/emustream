@@ -1,7 +1,7 @@
 use std::str::FromStr;
-use std::sync::{LazyLock, OnceLock};
+use std::sync::{Arc, LazyLock, OnceLock};
 
-use axum::extract::Path;
+use axum::extract::{Path, State};
 use axum::RequestPartsExt;
 use axum::{
     Extension, Json,
@@ -16,12 +16,14 @@ use axum_extra::{
 };
 use chrono::Utc;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
+use mongodb::bson::doc;
 use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::error::{ApiError, ApiResult};
-use crate::models::ValidatedJson;
+use crate::models::{self, ValidatedJson};
+use crate::AppContext;
 
 // Déclaration de la variable globale
 static SECRET: OnceLock<String> = OnceLock::new();
@@ -116,6 +118,7 @@ pub async fn handler_me_claims(claims: Claims) -> ApiResult<Claims> {
 }
 
 pub async fn handler_login(
+    State(app_state): State<Arc<AppContext>>,
     ValidatedJson(payload): ValidatedJson<AuthPayload>,
 ) -> ApiResult<AuthBody> {
     /* ensure!(!payload.username.is_empty(), Error::AuthMissingCredentials);
@@ -124,11 +127,23 @@ pub async fn handler_login(
     let iat = Utc::now().timestamp() as usize;
     let exp = iat + 7200;
 
+    let password_hashed = bcrypt::hash(payload.password.clone(), 4).unwrap();
+    println!("Password hashed: {}", password_hashed);
+    let user = app_state
+        .db
+        .collection::<models::User>("user")
+        .find_one(doc! { "username": payload.username.clone() })
+        .await
+        .map_err(|_| ApiError::AuthError(crate::error::AuthError::AuthInvalidCredentials))?
+        .ok_or(ApiError::AuthError(crate::error::AuthError::AuthInvalidCredentials))?;
+
+    if !bcrypt::verify(payload.password, &user.password).unwrap() {
+        return Err(ApiError::AuthError(crate::error::AuthError::AuthInvalidCredentials));
+    }
+
     let claims = Claims {
         aud: "emustream_app".to_string(),
-        sub: ObjectId::from_str("67f7c9ae2bf3047e6b740fd3")
-            .map_err(|_| ApiError::BadRequest("Invalid user ID".to_string()))?
-            .to_hex(),
+        sub: user.id.unwrap_or_default().to_hex(),
         iat,
         iss: "emustream_api".to_string(),
         name: payload.username.clone(),
