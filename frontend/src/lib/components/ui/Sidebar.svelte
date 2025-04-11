@@ -42,7 +42,7 @@
 
 <div
 	style="view-transition-name: sidebar"
-	class="bg-secondary absolute inset-0 z-10 flex w-16 flex-col gap-2 p-2 transition-all duration-500 hover:w-64"
+	class="bg-background-light absolute inset-0 z-10 flex w-16 flex-col gap-2 p-2 transition-all duration-500 hover:w-64"
 	class:-translate-x-full={!is_active}
 	class:opacity-0={!is_active}
 	onmouseover={() => (is_hovered = true)}

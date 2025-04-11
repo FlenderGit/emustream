@@ -9,6 +9,7 @@ export type User = {
 export type Game = {
     id: string,
     title: string,
+    slug: string,
     tags: string[],
     cover_url: string,
     developers: string[],
