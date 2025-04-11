@@ -1,0 +1,141 @@
+[
+    {
+        "id": "67f7c9ae2bf3047e6b740fd0",
+        "title": "Pokemon red",
+        "tags": [
+            "RPG",
+            "Pokemon"
+        ],
+        "cover_url": "https://www.nintendo.com/eu/media/images/10_share_images/games_15/game_boy_4/H2x1_GB_PokemonRed_frFR_image1600w.jpg",
+        "release_date": "1970-01-01T00:00:01.674Z",
+        "created_at": "2025-04-10T13:37:50.385043675Z",
+        "releases": [
+            {
+                "title": "Pokemon version rouge",
+                "cover_url": "https://image.jeuxvideo.com/images-sm/gb/d/a/dardgb0f.jpg",
+                "developers": [
+                    "Game Freak"
+                ],
+                "platform": "Gameboy",
+                "languages": [
+                    "EN"
+                ],
+                "region": "EUR",
+                "release_date": "1970-01-01T00:00:01.674Z",
+                "created_at": "2025-04-10T13:37:50.385041275Z"
+            }
+        ],
+        "slug": "pokemon-red"
+    },
+    {
+        "id": "67f7c9ae2bf3047e6b740fd1",
+        "title": "The Legend of Zelda: Link's Awakening",
+        "tags": [
+            "RPG",
+            "Zelda"
+        ],
+        "cover_url": "https://m.media-amazon.com/images/I/61yEvxbrBFL._AC_UF1000,1000_QL80_.jpg",
+        "release_date": "1993-06-06T00:00:00.00Z",
+        "created_at": "2025-04-10T13:37:50.385043675Z",
+        "releases": [
+            {
+                "title": "The Legend of Zelda: Link's Awakening",
+                "cover_url": "https://m.media-amazon.com/images/I/61yEvxbrBFL._AC_UF1000,1000_QL80_.jpg",
+                "platform": "Gameboy",
+                "developers": [
+                    "Nintendo"
+                ],
+                "languages": [
+                    "FR"
+                ],
+                "region": "EUR",
+                "release_date": "1998-12-11T00:00:00.00Z",
+                "created_at": "2025-04-10T13:37:50.385041275Z"
+            }
+        ],
+        "slug": "zelda-link-awakening"
+    },
+    {
+        "id": "67f7c9ae2bf3047e6b740fd2",
+        "title": "Darkwing Duck",
+        "tags": [
+            "Platformer",
+            "DuckTales"
+        ],
+        "cover_url": "https://image.jeuxvideo.com/images-sm/gb/d/a/dardgb0f.jpg",
+        "release_date": "1993-12-09T00:00:00.00Z",
+        "created_at": "2025-04-10T13:37:50.385043675Z",
+        "releases": [
+            {
+                "title": "Darkwing Duck",
+                "cover_url": "https://image.jeuxvideo.com/images-sm/gb/d/a/dardgb0f.jpg",
+                "platform": "Gameboy",
+                "developers": [
+                    "Sunsoft"
+                ],
+                "languages": [
+                    "EN"
+                ],
+                "region": "EUR",
+                "release_date": "1993-12-09T00:00:00.00Z",
+                "created_at": "2025-04-10T13:37:50.385041275Z"
+            }
+        ],
+        "slug": "darkwing-duck"
+    },
+    {
+        "id": "67f7c9ae2bf3047e6b740fd3",
+        "title": "Tetris",
+        "tags": [
+            "Puzzle"
+        ],
+        "cover_url": "https://psy-92.net/wp-content/uploads/2019/10/tetris-lingo-feature_feature.jpg",
+        "release_date": "1989-06-14T00:00:00.00Z",
+        "created_at": "2025-04-10T13:37:50.385043675Z",
+        "releases": [
+            {
+                "title": "Tetris",
+                "cover_url": "https://psy-92.net/wp-content/uploads/2019/10/tetris-lingo-feature_feature.jpg",
+                "platform": "Gameboy",
+                "developers": [
+                    "Alexey Pajitnov"
+                ],
+                "languages": [
+                    "EN"
+                ],
+                "region": "EUR",
+                "release_date": "1990-09-28T00:00:00.00Z",
+                "created_at": "2025-04-10T13:37:50.385041275Z"
+            }
+        ],
+        "slug": "tetris"
+    },
+    {
+        "id": "67f7c9ae2bf3047e6b740fd4",
+        "title": "Populous",
+        "tags": [
+            "Strategy",
+            "God Game"
+        ],
+        "cover_url": "https://psy-92.net/wp-content/uploads/2019/10/tetris-lingo-feature_feature.jpg",
+        "release_date": "1989-06-14T00:00:00.00Z",
+        "created_at": "2025-04-10T13:37:50.385043675Z",
+        "releases": [
+            {
+                "title": "Populous",
+                "cover_url": "https://psy-92.net/wp-content/uploads/2019/10/tetris-lingo-feature_feature.jpg",
+                "platform": "Gameboy",
+                "developers": [
+                    "Bullfrog"
+                ],
+                "languages": [
+                    "EN"
+                ],
+                "region": "NA",
+                "release_date": "1989-09-28T00:00:00.00Z",
+                "created_at": "2025-04-10T13:37:50.385041275Z"
+            }
+        ],
+        "slug": "populous"
+    }
+]

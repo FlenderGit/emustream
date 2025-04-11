@@ -24,6 +24,7 @@
 		} else {
 			animation = 'scroll-left';
 		}
+		console.log("Selected:", animation);
 
 
 		// Revode all class that start with view-transition-

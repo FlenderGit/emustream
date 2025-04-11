@@ -4,10 +4,10 @@
 	let { children } = $props();
 </script>
 
-<div class="flex slide-up">
+<div class="flex">
 	<Sidebar />
 
-	<div class="flex-1">
+	<div class="flex-1 container mx-auto p-4">
 		{@render children()}
 	</div>
 </div>

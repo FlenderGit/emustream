@@ -7,7 +7,7 @@
 	--color-background-light: #130429;
 
 	--color-white: #f8f8f8;
-	--color-whiter: #f5f5f5;
+	--color-whiter: #f0f0f0;
 }
 
 /* @custom-variant dark (&:where(.dark, .dark *)); */
@@ -94,5 +94,17 @@
 
 	.flex-between-center {
 		@apply flex items-center justify-between;
+	}
+
+	.image-center {
+		@apply bg-cover bg-center;
+	}
+
+	.absolute-center {
+		@apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+	}
+
+	.title {
+		@apply text-2xl font-semibold;
 	}
 }

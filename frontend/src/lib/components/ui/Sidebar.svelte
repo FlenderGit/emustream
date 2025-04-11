@@ -26,8 +26,10 @@
 	};
 
 	const links: Array<SidebarLink> = [
+		{ name: 'Home', href: '/', icon: 'mynaui:home' },
+		{ name: 'Profile', href: '/profile', icon: 'mynaui:user' },
 		{ name: 'Jeux', href: '/games', icon: 'mynaui:controller' },
-		{ name: 'Logout', onclick, icon: 'mynaui:logout', href: '/logout' }
+		{ name: 'New', href: '/new', icon: 'mynaui:plus' },
 	];
 
 	let is_active = $state(false);
@@ -38,31 +40,45 @@
 	});
 </script>
 
-<div class="w-16"></div>
+<div class="w-12"></div>
+
+{#snippet SidebarLink(link: SidebarLink)}
+	<a
+		href={link.href}
+		class="hover:bg-primary flex items-center gap-2 overflow-hidden rounded-xl px-2 py-1 transition-colors"
+		onclick={link.onclick}
+	>
+		<Icon icon={link.icon} class="shrink-0 size-6" font-size={convert_size_to_fontsize(ICONS_SIZE)} />
+		<p class="text-sm">{link.name}</p>
+	</a>
+{/snippet}
 
 <div
 	style="view-transition-name: sidebar"
-	class="bg-background-light absolute inset-0 z-10 flex w-16 flex-col gap-2 p-2 transition-all duration-500 hover:w-64"
+	class="bg-background-light border-r border-whiter/10 fixed inset-0 z-10 w-12 flex flex-col justify-between p-2 transition-all duration-500 hover:w-48"
 	class:-translate-x-full={!is_active}
 	class:opacity-0={!is_active}
 	onmouseover={() => (is_hovered = true)}
 	onmouseleave={() => (is_hovered = false)}
 >
-	{#each links as { name, icon, href, onclick }}
-		<a
-			{href}
-			class="hover:bg-primary flex items-center gap-2 overflow-hidden rounded-xl p-1 transition-colors"
-			{onclick}
-		>
-			<Icon {icon} class="shrink-0" font-size={convert_size_to_fontsize(ICONS_SIZE)} />
-			<p>{name}</p>
-		</a>
-	{/each}
+	<div class="flex flex-col gap-2">
+		{#each links as link}
+			{@render SidebarLink(link)}
+		{/each}
+	</div>
+	{@render SidebarLink({
+		name: 'Logout',
+		icon: 'mynaui:logout',
+		href: '/logout',
+		onclick
+	})}
+
+	
 </div>
 
 {#if is_hovered}
 	<div
 		transition:fade
-		class="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm transition-all duration-500"
+		class="absolute inset-0 bg-neutral-900/50 backdrop-blur-xs transition-all duration-500"
 	></div>
 {/if}
