@@ -34,7 +34,7 @@ impl ErrorJson {
 #[derive(Debug, PartialEq, Eq, Error)]
 pub enum ApiError {
     #[error("{0}")]
-    Generic(&'static str, StatusCode),
+    Generic(String, StatusCode),
 
     #[error("{INTERNAL}")]
     Internal,
@@ -91,7 +91,7 @@ pub(crate) struct ErrorResponse {
 impl From<MultipartError> for ApiError {
     fn from(err: MultipartError) -> Self {
         ApiError::Generic(
-            "Multipart error",
+            "Multipart error".to_string(),
             StatusCode::BAD_REQUEST,
         )
     }
@@ -101,7 +101,7 @@ impl From<mongodb::error::Error> for ApiError {
     fn from(err: mongodb::error::Error) -> Self {
         match *err.kind {
             mongodb::error::ErrorKind::InvalidArgument { message, .. } => ApiError::BadRequest(message),
-            _ => ApiError::Internal,
+            e => ApiError::Generic(format!("MongoDB error: {}", e), StatusCode::INTERNAL_SERVER_ERROR),
         }
     }
 }

@@ -42,7 +42,7 @@ async fn handler_upload_new_game(
     info!("Game uploaded: {:?}", game);
     info!("ROM size: {} bytes", rom.len());
 
-    let game_dir = format!("/data/games/{}", game.title);
+    let game_dir = format!("/data/games/{}", game.slug);
     let path = std::path::Path::new(&game_dir);
     if !path.exists() {
         std::fs::create_dir_all(&path)

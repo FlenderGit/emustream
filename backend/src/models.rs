@@ -38,7 +38,6 @@ pub struct Game {
     pub tags: Vec<String>,
 
     pub cover_url: String,
-    pub description: String,
     
     pub release_date: chrono::DateTime<chrono::Utc>,
     pub created_at: chrono::DateTime<chrono::Utc>,

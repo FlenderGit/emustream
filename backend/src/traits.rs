@@ -29,7 +29,7 @@ impl CursorExt for Cursor<Document> {
             let object_id = doc
                 .get_object_id("_id")
                 .map_err(|err| ApiError::Generic(
-                    "Failed to get ObjectId from document",
+                    "Failed to get ObjectId from document".to_string(),
                     StatusCode::BAD_REQUEST,
                 ))?;
             object_ids.push(object_id);
@@ -66,7 +66,7 @@ impl MultipartExt for Multipart {
                     "title" => game.title = text,
                     "tags" => game.tags = text.split(',').map(|s| s.trim().to_string()).collect(),
                     _  => Err(ApiError::Generic(
-                        "Invalid field name",
+                        "Invalid field name".to_string(),
                         StatusCode::BAD_REQUEST,
                     ))?,
                 }
