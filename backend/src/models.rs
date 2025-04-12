@@ -22,7 +22,7 @@ use mongodb::bson::{doc, oid::ObjectId};
 
 use crate::error::{ApiError, ErrorJson, ErrorsJson};
 
-#[derive(Debug, Deserialize, Serialize, Validate)]
+#[derive(Debug, Deserialize, Serialize, Validate, Default)]
 pub struct Game {
     #[serde(
         rename(serialize = "id", deserialize = "_id"),

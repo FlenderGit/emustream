@@ -1,67 +1,90 @@
 use std::{collections::HashMap, sync::Arc};
 
 use axum::{
-    extract::{Multipart, Path, Query, State}, http::HeaderMap, routing::post, Router
+    Router,
+    extract::{Multipart, Path, Query, State},
+    http::HeaderMap,
+    routing::post,
 };
 use futures::{TryStreamExt, io::Cursor};
+use log::info;
 use mongodb::{
     bson::{doc, oid::ObjectId},
     options::FindOptions,
 };
 
 use crate::{
-    api::SortDirection, error::{ApiError, ApiResult}, models::{Game, User}, traits::CursorExt, AppContext
+    AppContext,
+    api::SortDirection,
+    error::{ApiError, ApiResult},
+    models::{Game, User},
+    traits::CursorExt,
 };
 
-use super::{auth::Claims, Pagination};
+use super::{Pagination, auth::Claims};
 
 pub fn get_games_router(app_state: Arc<AppContext>) -> Router<Arc<AppContext>> {
     Router::new()
         .route("/", axum::routing::get(get_all_games))
         .route("/homepage", axum::routing::get(get_data_homepage))
-        //.route("/upload-new-game", post(handler_upload_new_game))
+        .route("/upload-game", post(handler_upload_new_game))
         //.route("/upload-new-release", post(handler_upload_new_release))
         .route("/{id}", axum::routing::get(get_game_by_id))
         .with_state(app_state)
 }
-
-/* async fn handler_upload_new_game(
+use crate::traits::MultipartExt;
+async fn handler_upload_new_game(
     State(app_state): State<Arc<AppContext>>,
-    headers: HeaderMap,
+    claims: Claims,
     mut multipart: Multipart,
-) -> ApiResult<Game> { */
+) -> ApiResult<Game> {
+    let (game, rom) = multipart.extract_game_and_save().await?;
 
-// Game: Name, tags, developers, release_date
-// Release: title, platforms, languages, region, release_date, (path)
+    app_state
+        .db
+        .collection::<Game>("game")
+        .insert_one(&game)
+        .await?;
 
-// Form
-// Toggle: Is game already exists ?
-//  yes: only add release form
-//  no: add game form + release form
+    info!("Game uploaded: {:?}", game);
+    info!("ROM size: {} bytes", rom.len());
 
-/* let game_name = headers
-.get("X-Game-name"); */
+    // Save the rom to a file or process it as needed
+    // For example, save it to a specific path
+    // If directory save for user_id does not exist, create it
+    let user_dir = format!("/saves/{}", claims.sub);
+    let path = std::path::Path::new(&user_dir);
+    if !path.exists() {
+        std::fs::create_dir_all(&path)
+            .map_err(|e| ApiError::BadRequest(format!("Failed to create directory: {}", e)))?;
+    }
 
-/*     Ok(axum::Json(game))
-} */
+    let rom_path = format!("{}/{}.rom", user_dir, game.title);
+    std::fs::write(&rom_path, &rom)
+        .map_err(|e| ApiError::BadRequest(format!("Failed to write file: {}", e)))?;
 
+    info!("ROM saved to: {}", rom_path);
 
-async fn get_all_games(paginate: Query<Pagination>, State(app_state): State<Arc<AppContext>>) -> ApiResult<Vec<Game>> {
-    
+    Ok(axum::Json(game))
+}
+
+async fn get_all_games(
+    paginate: Query<Pagination>,
+    State(app_state): State<Arc<AppContext>>,
+) -> ApiResult<Vec<Game>> {
     let sort = match &paginate.sort_dir {
         Some(sort) => {
             let dir = if *sort == SortDirection::Desc { -1 } else { 1 };
             doc! { "title": dir }
-        },
-        None => doc! {}
+        }
+        None => doc! {},
     };
 
     let options = FindOptions::builder()
         .limit(paginate.limit)
         .skip(paginate.page)
-         .sort(sort)
+        .sort(sort)
         .build();
-
 
     let filter_doc = match &paginate.query {
         Some(query) => doc! { "title": { "$regex": query, "$options": "i" } },
@@ -85,12 +108,6 @@ struct HomepageResult {
     recent_added: Vec<String>,
     data: HashMap<String, Game>,
 }
-
-/* impl<T> From<Cursor<T>> for Vec<T> {
-    fn from(cursor: Cursor<T>) -> Self {
-        cursor.try_collect().await.unwrap()
-    }
-} */
 
 async fn get_user_recent_games(
     collection_user: &mongodb::Collection<User>,
