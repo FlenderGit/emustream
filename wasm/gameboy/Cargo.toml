@@ -8,3 +8,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 wasm-bindgen = "0.2.100"
+base = { path = "../base" }
+rusty_boy_core = { path = "C://Users/trist/Desktop/Programmation/Rust/rusty_boy/core" }
+console_error_panic_hook = "0.1.7"
