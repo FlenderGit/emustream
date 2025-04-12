@@ -1,9 +1,9 @@
 use axum::{extract::Multipart, http::StatusCode};
 use mongodb::{action::Find, bson::{oid::ObjectId, Document}, Cursor};
 
-use std::io::Error;
+use std::{fmt::format, io::Error};
 
-use crate::{api::Pagination, error::ApiError, models::Game};
+use crate::{api::Pagination, error::ApiError, models::{Game, Release}};
 
 
 
@@ -48,6 +48,10 @@ pub trait MultipartExt {
 impl MultipartExt for Multipart {
     async fn extract_game_and_save(&mut self) -> Result<(Game, Vec<u8>), ApiError> {
         let mut game = Game::default();
+        let mut release = Release {
+            id: Some(ObjectId::new()),
+            ..Default::default()
+        };
         let mut rom = Vec::new();
 
         while let Some(field) = self.next_field().await? {
@@ -68,6 +72,9 @@ impl MultipartExt for Multipart {
                 }
             }
         }
+
+        release.path = format!("/data/games/{}/{}", game.title, release.id.unwrap_or_default());
+        game.releases.push(release);
 
         Ok((game, rom))
     }

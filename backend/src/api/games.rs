@@ -35,35 +35,39 @@ pub fn get_games_router(app_state: Arc<AppContext>) -> Router<Arc<AppContext>> {
 use crate::traits::MultipartExt;
 async fn handler_upload_new_game(
     State(app_state): State<Arc<AppContext>>,
-    claims: Claims,
     mut multipart: Multipart,
 ) -> ApiResult<Game> {
     let (game, rom) = multipart.extract_game_and_save().await?;
+
+    info!("Game uploaded: {:?}", game);
+    info!("ROM size: {} bytes", rom.len());
+
+    let game_dir = format!("/data/games/{}", game.title);
+    let path = std::path::Path::new(&game_dir);
+    if !path.exists() {
+        std::fs::create_dir_all(&path)
+            .map_err(|e| ApiError::BadRequest(format!("Failed to create directory: {}", e)))?;
+    }
+
+    let release = game
+        .releases
+        .get(0)
+        .ok_or_else(|| ApiError::BadRequest("No release found for the game".to_string()))?;
+
+    if let Some(id) = release.id {
+        let rom_path = format!("{}/{}", game_dir, id);
+        std::fs::write(&rom_path, &rom)
+            .map_err(|e| ApiError::BadRequest(format!("Failed to write file: {}", e)))?;
+        info!("ROM saved to: {}", rom_path);
+    } else {
+        return Err(ApiError::BadRequest("Release ID is missing".to_string()));
+    }
 
     app_state
         .db
         .collection::<Game>("game")
         .insert_one(&game)
         .await?;
-
-    info!("Game uploaded: {:?}", game);
-    info!("ROM size: {} bytes", rom.len());
-
-    // Save the rom to a file or process it as needed
-    // For example, save it to a specific path
-    // If directory save for user_id does not exist, create it
-    let user_dir = format!("/saves/{}", claims.sub);
-    let path = std::path::Path::new(&user_dir);
-    if !path.exists() {
-        std::fs::create_dir_all(&path)
-            .map_err(|e| ApiError::BadRequest(format!("Failed to create directory: {}", e)))?;
-    }
-
-    let rom_path = format!("{}/{}.rom", user_dir, game.title);
-    std::fs::write(&rom_path, &rom)
-        .map_err(|e| ApiError::BadRequest(format!("Failed to write file: {}", e)))?;
-
-    info!("ROM saved to: {}", rom_path);
 
     Ok(axum::Json(game))
 }
