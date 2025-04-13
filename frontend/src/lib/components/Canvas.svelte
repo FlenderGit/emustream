@@ -2,11 +2,22 @@
 	import { KeyboardController, map_keyboard_gb, TypeAction } from '$lib/types/mapper';
 	import { onMount } from 'svelte';
 
+	type Props = {
+		width: number;
+		height: number;
+		oninit?: any;
+		onupdate?: any;
+	}
+
+	const {
+		width,
+		height
+	}: Props = $props();
+
+
 	let canvas: HTMLCanvasElement;
 
-	const WIDTH = 160;
-	const HEIGHT = 144;
-	const buffer = new Uint8Array(WIDTH * HEIGHT * 4);
+	const buffer = new Uint8Array(width * height * 4);
 
 	const vertexShader = `
 		attribute vec2 a_position;
@@ -26,8 +37,15 @@
 		}
 	`;
 
+	// const gameboy = new Gameboy()
 	function createShader(gl: WebGLRenderingContext, type: number, source: string) {
 		const shader = gl.createShader(type);
+
+		if (!shader) {
+			console.error('Unable to create shader');
+			return null;
+		}
+
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
 		
@@ -65,7 +83,7 @@
 		gl.useProgram(program);
 
 		// Configuration du viewport
-		gl.viewport(0, 0, WIDTH, HEIGHT);
+		gl.viewport(0, 0, width, height);
 
 		// Création du buffer de position
 		const positionBuffer = gl.createBuffer();
@@ -86,7 +104,7 @@
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, WIDTH, HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
 		// Uniform de texture
 		const textureLocation = gl.getUniformLocation(program, 'u_texture');
@@ -99,7 +117,7 @@
 				buffer[i + 2] = Math.random() * 255; // B
 				buffer[i + 3] = 255; // A
 			}
-			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, WIDTH, HEIGHT, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
+			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, buffer);
 		}
 
         let frames = 0;
@@ -131,8 +149,8 @@
 
 <canvas
 	bind:this={canvas}
-	width={WIDTH}
-	height={HEIGHT}
+	{width}
+	{height}
 	class="h-96"
     style="image-rendering: pixelated;"
 ></canvas>

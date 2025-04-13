@@ -5,7 +5,7 @@ export type Action = 'A' | 'B';
 
 export type Input = Direction | Action;
 
-type Control = string;
+export type Control = string;
 
 type Mapper<TIn extends Control, TOut extends Control> = {
     [key in TIn]: TOut
@@ -57,7 +57,7 @@ const flip = (data) => Object.fromEntries(
       .map(([key, value]) => [value, key])
     );
 
-abstract class Controller<TIn extends Control, TOut extends Control> {
+export abstract class Controller<TIn extends Control, TOut extends Control> {
 
     protected events: Record<TypeAction, Array<EventCallback<TOut>>>;
 
