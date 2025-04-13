@@ -1,4 +1,3 @@
-use base::{BaseConsole, Screen};
 use rusty_boy_core::{gameboy, keypad::{Key, KeyEvent}};
 use wasm_bindgen::prelude::*;
 
