@@ -9,7 +9,6 @@
 
 	const { title, games, see_more_url }: Props = $props();
 
-	const games_2 = $derived([...games, ...games, ...games, ...games]);
 </script>
 
 <div>
@@ -20,7 +19,7 @@
         {/if}
     </div>
     <div class="grid grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 mt-4">
-        {#each games_2 as game}
+        {#each games as game}
             <a
                 href="/games/{game.slug}"
                 class="aspect-video rounded-lg bg-cover bg-center p-4"

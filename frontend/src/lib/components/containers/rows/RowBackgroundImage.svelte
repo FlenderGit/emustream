@@ -10,6 +10,7 @@
 
 
 	const splited_games = $derived(chunk_list(games, 3));
+	$inspect(splited_games);
 
 	let index = $state(0);
 

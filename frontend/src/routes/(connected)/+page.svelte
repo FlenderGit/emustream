@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Canvas from '$lib/components/Canvas.svelte';
 	import RowBackgroundImage from '$lib/components/containers/rows/RowBackgroundImage.svelte';
 	import RowCarouselCover from '$lib/components/containers/rows/RowCarouselCover.svelte';
 	import GridSimple from '$lib/components/grid/GridSimple.svelte';
@@ -13,9 +12,12 @@
 		data: HomepageResponse,
 		key: keyof Omit<HomepageResponse, 'data'>
 	) => {
-		return data[key].map((it: string) => {
+		console.log('Extracting data for key:', key);
+		const out = data[key].map((it: string) => {
 			return data.data[it];
 		});
+		console.log('Extracted data:', out);
+		return out;
 	};
 
 	let state: 'loading' | 'error' | 'success' = $state('loading');
@@ -25,11 +27,7 @@
 	onMount(() => {
 		getDataHomepage()
 			.then((res) => {
-				data = {
-					data: res.data,
-					recent: [ ...res.recent, ...res.recent, ...res.recent, ...res.recent, ...res.recent, ...res.recent ],
-					recent_added: [ ...res.recent_added, ...res.recent_added, ...res.recent_added, ...res.recent_added, ...res.recent_added, ...res.recent_added ]
-				}
+				data = res;
 				state = 'success';
 			})
 			.catch((err) => {

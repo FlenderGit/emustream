@@ -5,6 +5,7 @@ import { redirect } from '@sveltejs/kit';
 export const load = async function () {
 	try {
 		const user = await fetch_me();
+		console.log('user', user);
 		if (user) {
             user_store.set(user);
 			return { user };

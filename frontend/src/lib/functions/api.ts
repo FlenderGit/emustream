@@ -7,7 +7,7 @@ import { get } from 'svelte/store';
 
 
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL + '/api';
 
 const fetch_api_restricted = function <T>(
     endpoint: string,
@@ -144,7 +144,7 @@ const GAMES: Array<Game> = [
     }
 ]
 
-export const get_game_by_slug_and_console = function (slug: string, c: string): Game | undefined {
+export const get_game_by_slug_and_console = async function (slug: string, c: string): Promise<Game> {
 
     /* const promise = new Promise<Game | undefined>((resolve, reject) => {
         const game = GAMES.find(game => game.slug === slug);
@@ -158,8 +158,7 @@ export const get_game_by_slug_and_console = function (slug: string, c: string): 
         }, 1000);
     }); */
 
-    const game = GAMES.find(game => game.slug === slug);
-    return game;
+    return await fetch_api_restricted<Game>(`/games/${slug}`)
 
 
 }
@@ -191,7 +190,7 @@ export const getDataHomepage = function (): Promise<HomepageResponse> {
 
 export const fetch_me = function (): Promise<User> {
 
-    const data: User = {
+    /* const data: User = {
         username: "test"
     };
 
@@ -199,7 +198,25 @@ export const fetch_me = function (): Promise<User> {
         setTimeout(() => {
             resolve(data);
         }, 1000);
-    });
+    }); */
 
-    return fetch_api_restricted('/api/me')
+    return fetch_api_restricted('/me')
+}
+
+export const fetch_login = function (username: string, password: string): Promise<AuthTokens> {
+    return fetch(API_URL + '/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username,
+            password
+        })
+    }).then((response) => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json() as Promise<AuthTokens>;
+    });
 }
