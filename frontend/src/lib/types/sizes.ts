@@ -9,6 +9,8 @@ export const SIZES = {
     "4xl": 2,
     "5xl": 2.2,
     "6xl": 2.4,
+    "7xl": 2.6,
+    "8xl": 2.8,
 }
 
 export type Size = keyof typeof SIZES

@@ -27,15 +27,15 @@
     };
 
 </script>
-<main class="from-background bg-gradient-to-t to-primary/25 flex flex-col flex-center">
+<main class="from-background bg-gradient-to-t to-primary/25 flex flex-col flex-center gap-4">
     
-    <div class="flex items-center gap-2 text-7xl font-semibold">
-        <Icon icon="mynaui:controller" font-size={convert_size_to_fontsize("6xl")} />
+    <div class="flex items-center gap-4 text-7xl font-semibold">
+        <Icon icon="mynaui:controller" font-size={convert_size_to_fontsize("7xl")} />
         <p>Emustream</p>
     </div>
 
     <div>
-        <a href="/login" class="btn bg-slate-700" onclick={login}>Login</a>
+        <a href="/login" class="btn bg-slate-700 text-2xl" onclick={login}>Login</a>
     </div>
 
 </main>
