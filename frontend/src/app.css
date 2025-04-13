@@ -1,1 +1,110 @@
 @import 'tailwindcss';
+
+@theme {
+	--color-primary: #6829E0;
+
+	--color-background: #0a011b;
+	--color-background-light: #130429;
+
+	--color-white: #f8f8f8;
+	--color-whiter: #f0f0f0;
+}
+
+/* @custom-variant dark (&:where(.dark, .dark *)); */
+
+
+@layer base {
+	html {
+		font-family: 'Raleway', sans-serif;
+		background-color: var(--color-background);
+		color: var(--color-white);
+	}
+
+	body {
+		@apply grid min-h-screen;
+	}
+
+	@keyframes slide-from-bottom {
+		from {
+			transform: translateY(100%);
+		}
+	}
+
+	@keyframes slide-to-top {
+		to {
+			transform: translateY(-100%);
+		}
+	}
+
+	.view-transition-scroll-down {
+		view-transition-name: scroll-down;
+	}
+
+	.view-transition-scroll-up {
+		view-transition-name: scroll-up;
+	}
+
+	.view-transition-scroll-left {
+		view-transition-name: scroll-left;
+	}
+
+	.view-transition-scroll-right {
+		view-transition-name: scroll-right;
+	}
+
+	:root::view-transition-old(scroll-right) {
+		animation:
+			1400ms slide-to-left,
+			900ms fade-out;
+	}
+
+	:root::view-transition-new(scroll-right) {
+		animation: 1400ms slide-from-right;
+	}
+
+	:root::view-transition-old(scroll-left) {
+		animation: 800ms reverse slide-from-right;
+	}
+
+	:root::view-transition-new(scroll-left) {
+		animation: 800ms reverse slide-to-left;
+	}
+
+	:root::view-transition-old(scroll-down) {
+		animation: 800ms slide-to-top;
+	}
+
+	:root::view-transition-new(scroll-down) {
+		animation: 800ms slide-from-bottom;
+	}
+
+	:root::view-transition-old(scroll-up) {
+		animation: 800ms reverse slide-from-bottom;
+	}
+
+	:root::view-transition-new(scroll-up) {
+		animation: 800ms reverse slide-to-top;
+	}
+}
+
+@layer components {
+	.flex-center {
+		@apply flex items-center justify-center;
+	}
+
+	.flex-between-center {
+		@apply flex items-center justify-between;
+	}
+
+	.image-center {
+		@apply bg-cover bg-center;
+	}
+
+	.absolute-center {
+		@apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+	}
+
+	.title {
+		@apply text-2xl font-semibold;
+	}
+}
