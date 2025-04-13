@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { KeyboardController, map_keyboard_gb, TypeAction } from '$lib/types/mapper';
 	import { onMount } from 'svelte';
 
 	let canvas: HTMLCanvasElement;
@@ -41,6 +42,10 @@
 	onMount(() => {
 		const gl = canvas.getContext('webgl');
 		if (!gl) return;
+
+        const controller = new KeyboardController(map_keyboard_gb);
+        controller.on(TypeAction.PRESS, console.log);
+        controller.on(TypeAction.RELEASE, console.log);
 
 		// Création des shaders avec vérification d'erreurs
 		const vs = createShader(gl, gl.VERTEX_SHADER, vertexShader);
