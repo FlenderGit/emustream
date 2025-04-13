@@ -27,7 +27,7 @@
     };
 
 </script>
-<main class="from-background bg-gradient-to-t to-primary/25 flex flex-col flex-center gap-4">
+<main class="from-background bg-gradient-to-t to-primary/25 flex flex-col flex-center gap-4 flex-1">
     
     <div class="flex items-center gap-4 text-7xl font-semibold">
         <Icon icon="mynaui:controller" font-size={convert_size_to_fontsize("7xl")} />

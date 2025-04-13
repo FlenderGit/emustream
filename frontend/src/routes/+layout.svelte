@@ -45,6 +45,6 @@
 	});
 </script>
 
-<div bind:this={div_ref} class="grid">
+<div bind:this={div_ref} class="flex flex-col">
 	{@render children()}
 </div>

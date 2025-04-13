@@ -55,6 +55,12 @@ impl Gameboy {
             self.gameboy.update_input(KeyEvent::Release(key));
         }
     }
+
+    #[wasm_bindgen]
+    pub fn get_game_name(&self) -> String {
+        self.gameboy.header().title().to_string()
+    }
+
 }
 
 impl TryFrom<GameboyKey> for Key {
