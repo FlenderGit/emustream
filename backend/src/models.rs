@@ -22,7 +22,7 @@ use mongodb::bson::{doc, oid::ObjectId};
 
 use crate::error::{ApiError, ErrorJson, ErrorsJson};
 
-#[derive(Debug, Deserialize, Serialize, Validate)]
+#[derive(Debug, Deserialize, Serialize, Validate, Default)]
 pub struct Game {
     #[serde(
         rename(serialize = "id", deserialize = "_id"),
@@ -36,19 +36,28 @@ pub struct Game {
 
     #[validate(length(min = 0, max = 10))]
     pub tags: Vec<String>,
-    pub developers: Vec<String>,
+
+    pub cover_url: String,
+    
     pub release_date: chrono::DateTime<chrono::Utc>,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub releases: Vec<Release>,
-    pub metadata: Option<bool>,
+    #[validate(length(min = 0, max = 10))]
+    pub slug: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Release {
-    /* #[serde(rename = "_id")]
-    id: Option<ObjectId>, */
-    pub title: Option<String>,
-    pub platforms: Vec<String>,
+    #[serde(
+        rename(serialize = "id", deserialize = "_id"),
+        skip_serializing_if = "Option::is_none",
+        serialize_with = "serialize_option_object_id_as_hex_string"
+    )]
+    pub id: Option<ObjectId>,
+    pub title: String,
+    pub cover_url: String,
+    pub platform: String,
+    pub developers: Vec<String>,
     pub languages: Vec<String>,
     pub region: Option<String>,
     pub release_date: Option<chrono::DateTime<chrono::Utc>>,

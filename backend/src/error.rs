@@ -1,7 +1,9 @@
-use axum::{Json, http::StatusCode, response::IntoResponse};
+use axum::{extract::multipart::MultipartError, http::StatusCode, response::IntoResponse, Json};
 use serde::Serialize;
 use std::fmt;
 use thiserror::Error;
+
+use crate::middleware::TRACE_ID;
 
 
 const INTERNAL: &str = "Internal error";
@@ -32,7 +34,7 @@ impl ErrorJson {
 #[derive(Debug, PartialEq, Eq, Error)]
 pub enum ApiError {
     #[error("{0}")]
-    Generic(&'static str, StatusCode),
+    Generic(String, StatusCode),
 
     #[error("{INTERNAL}")]
     Internal,
@@ -86,12 +88,20 @@ pub(crate) struct ErrorResponse {
 } */
 
 
+impl From<MultipartError> for ApiError {
+    fn from(err: MultipartError) -> Self {
+        ApiError::Generic(
+            "Multipart error".to_string(),
+            StatusCode::BAD_REQUEST,
+        )
+    }
+}
 
 impl From<mongodb::error::Error> for ApiError {
     fn from(err: mongodb::error::Error) -> Self {
         match *err.kind {
             mongodb::error::ErrorKind::InvalidArgument { message, .. } => ApiError::BadRequest(message),
-            _ => ApiError::Internal,
+            e => ApiError::Generic(format!("MongoDB error: {}", e), StatusCode::INTERNAL_SERVER_ERROR),
         }
     }
 }
@@ -134,7 +144,7 @@ impl IntoResponse for ApiError {
         .try_with(|trace_id| trace_id.clone().to_string())
         .unwrap_or_else(|_| "unknown".to_string()); */
 
-        let trace_id = "not-implemented".to_string(); // TODO: Implement trace_id
+        let trace_id = TRACE_ID.get().to_string();
 
         let body = Json(ErrorResponse {
             error: self.to_string(),
