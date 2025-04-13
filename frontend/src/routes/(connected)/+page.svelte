@@ -41,8 +41,6 @@
 
 <p>Login as : {$user_store?.username}</p>
 
-<Canvas />
-
 {#if state === 'loading'}
 	<p>Loading...</p>
 {:else if state === 'success' && data}

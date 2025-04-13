@@ -166,7 +166,7 @@ export const get_game_by_slug_and_console = function (slug: string, c: string): 
 
 export const getDataHomepage = function (): Promise<HomepageResponse> {
 
-    const data: HomepageResponse = {
+    /* const data: HomepageResponse = {
         "recent": [
             "67f7c9ae2bf3047e6b740fd0"
         ],
@@ -184,7 +184,7 @@ export const getDataHomepage = function (): Promise<HomepageResponse> {
         setTimeout(() => {
             resolve(data);
         }, 1000);
-    });
+    }); */
 
     return fetch_api_restricted<HomepageResponse>('/api/games/homepage');
 };
